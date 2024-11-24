@@ -12,7 +12,7 @@ WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
-ATOM                MyRegisterClass(HINSTANCE hInstance);
+ATOM                MyRegisterClass(HINSTANCE hInstance); // 핸들
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
@@ -32,7 +32,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // 전역 문자열을 초기화합니다.
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_API, szWindowClass, MAX_LOADSTRING);
-    MyRegisterClass(hInstance);
+    MyRegisterClass(hInstance); // 핸들이 들어간다.
 
     // 애플리케이션 초기화를 수행합니다:
     if (!InitInstance (hInstance, nCmdShow))
@@ -71,18 +71,18 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.cbSize = sizeof(WNDCLASSEX);
 
     wcex.style          = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc    = WndProc;
+    wcex.lpfnWndProc    = WndProc; // 나중에 메세지를 처리할 프록함수
     wcex.cbClsExtra     = 0;
     wcex.cbWndExtra     = 0;
     wcex.hInstance      = hInstance;
     wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_API));
-    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
+    wcex.hCursor        = LoadCursor(nullptr, IDC_CROSS);
     wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
     wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_API);
-    wcex.lpszClassName  = szWindowClass;
+    wcex.lpszClassName  = szWindowClass; //  API라는 이름의 정보
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
-    return RegisterClassExW(&wcex);
+    return RegisterClassExW(&wcex); // 레지스터 함수를 이용해 렘에다가 정보를 저장한다.
 }
 
 //
@@ -95,20 +95,20 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //        이 함수를 통해 인스턴스 핸들을 전역 변수에 저장하고
 //        주 프로그램 창을 만든 다음 표시합니다.
 //
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) // 초기화 하는곳
 {
    hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, // szWindowClass에는 API 이름이 들어가있음. 전체적인 정보의 대한 핸들값 반환
+      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr); // 크기의 정도
 
    if (!hWnd)
    {
       return FALSE;
    }
 
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
+   ShowWindow(hWnd, nCmdShow); // 그 핸들값을 이용해서 화면 출력  
+   UpdateWindow(hWnd); // 실시간으로 업데이트 하는것들
 
    return TRUE;
 }
@@ -123,7 +123,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY  - 종료 메시지를 게시하고 반환합니다.
 //
 //
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) // 메세지를 처리하는 프록함수
 {
     switch (message)
     {
@@ -146,9 +146,39 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_PAINT:
         {
+
+        //DC란 화면 출력에 필요한 모든 정보를 가지는 데이터 구조체이며
+       //GDI모듈에 의해서 관리된다.
+       //어떤 폰트에 사용할건가? 어떤 선의 굵기를 정해줄건가 어떤 색상으로 그려줄껀가
+       //화면 출력에 필요한 모든 경우는 WINAPI에서는 DC를 통해서 작업을 진행 할 수 있다.
+
+
             PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
+            HDC hdc = BeginPaint(hWnd, &ps); // 핸들값으로 DC를 생성해주고
+
+           
+            HBRUSH BlueBrush = CreateSolidBrush(RGB(0, 0, 255));  //RGB를 이용해 파랑 브러쉬를 생성해준다
+    
+            HBRUSH OldBrush = (HBRUSH)SelectObject(hdc, BlueBrush); // 셀렉트 오브젝트로 블루브러쉬 쓸꺼다 함수 선언해주고, 기존에 있던 흰색 브러쉬 반환
+
+            Rectangle(hdc, 100, 100, 200, 200); // 네모 그리는 함수
+
+            
+            SelectObject(hdc, OldBrush); //다시 흰색 원본브러쉬로 바꿔주고
+
+      
+            DeleteObject(BlueBrush);       //파랑 브러쉬 삭제
+
+            HPEN Yellowpen = CreatePen(PS_SOLID, 2, RGB(255,215, 0)); // 옐로우펜 만들고 선형태 , 두께, 색깔 넣기
+            HPEN OldPen = (HPEN)SelectObject(hdc, Yellowpen);  // 셀렉트 잡을 통해 기존 흰색깔 선 저장해놓고 옐로우펜 선택
+
+            Ellipse(hdc, 200, 200, 300, 300); //  노란팬으로 원 야무지게 그리기
+
+            SelectObject(hdc, OldPen); // 다시 돌려놓고
+            DeleteObject(Yellowpen); // 썼던거 삭제
+            
+
+           
             EndPaint(hWnd, &ps);
         }
         break;
