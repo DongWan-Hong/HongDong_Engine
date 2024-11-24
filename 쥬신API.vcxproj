@@ -24,6 +24,7 @@
     <ProjectGuid>{96d1adcb-3908-4d82-92bc-3ef4d152d2b5}</ProjectGuid>
     <RootNamespace>쥬신API</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>00_쥬신API</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
