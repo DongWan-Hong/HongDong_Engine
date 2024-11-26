@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "00_쥬신API", "쥬신API.v
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HongDongEngine_Windows", "..\HongDongEngine_Windows\HongDongEngine_Windows.vcxproj", "{81C5E5CA-BC1A-46D1-906C-C2678815D2D5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HongDong_Engine_Source", "..\HongDong_Engine_Source\HongDong_Engine_Source.vcxitems", "{E40FB046-E056-47D5-98BD-68D95C42D4FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -37,5 +39,9 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {19327F67-C94E-4203-9751-3940D3C24711}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\HongDong_Engine_Source\HongDong_Engine_Source.vcxitems*{96d1adcb-3908-4d82-92bc-3ef4d152d2b5}*SharedItemsImports = 4
+		..\HongDong_Engine_Source\HongDong_Engine_Source.vcxitems*{e40fb046-e056-47d5-98bd-68d95c42d4fb}*SharedItemsImports = 9
 	EndGlobalSection
 EndGlobal
